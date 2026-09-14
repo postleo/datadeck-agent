@@ -1,0 +1,16 @@
+Order ID,Customer,Country,Order Date,Amount,Status,Notes
+1001, Alice  ,USA,2025-01-05,$1200.00,Shipped,ok
+1002,bob,usa,05/02/2025,"$1,300.50",shipped,
+1003,Carol,U.S.A.,2025/02/14,€900,Pending,check address
+1004, alice ,United States,14/02/2025,$1250,SHIPPED,ok
+1005,Dave,UK,2025-03-01,£1100,Delivered,N/A
+1006,Eve,USA,03/03/2025,$1150,pending,
+1007,frank,USA,2025-03-05,$1180,Shipped,ok
+1008,Grace,USA,2025-03-05,$1180,Shipped,ok
+1008,Grace,USA,2025-03-05,$1180,Shipped,ok
+1009,Heidi,UK,2025-03-10,£980,Delivered,
+1010,Ivan,USA,2025-03-12,$99999,Shipped,large order?
+1011,Judy,USA,2025-13-01,$1210,Shipped,bad date
+1012,Mallory,,2025-04-01,$1230,Pending,missing country
+1013,Niaj,USA,2025-04-02,$1240,delivered,
+1014,Olivia,USA,2025-04-03,$1220,Shipped,ok

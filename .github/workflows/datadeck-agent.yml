@@ -1,0 +1,65 @@
+name: DataDeck Agent
+
+# Drop a CSV/Excel file into the inbox/ folder and push. The agent reads it,
+# cleans it, analyzes it, builds a small website, (optionally) emails a report
+# and publishes the site, and commits the results back to your repository.
+
+on:
+  push:
+    paths:
+      - 'inbox/**'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: datadeck-agent-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install
+        run: npm ci
+
+      - name: Process the inbox
+        env:
+          # Required for the agent's reasoning. Add it under
+          # Settings → Secrets and variables → Actions.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DATADECK_PROVIDER: ${{ vars.DATADECK_PROVIDER }}
+          DATADECK_MODEL_ID: ${{ vars.DATADECK_MODEL_ID || 'gemini-flash-latest' }}
+          # Optional — email the results (leave unset to skip).
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM: ${{ vars.EMAIL_FROM }}
+          EMAIL_TO: ${{ vars.EMAIL_TO }}
+          # Optional — publish the website (leave unset to skip).
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          # So links in the report point back to your repo.
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+        run: npm run repo:run
+
+      - name: Commit the results
+        if: always()
+        run: |
+          git config user.name "datadeck-agent[bot]"
+          git config user.email "datadeck-agent@users.noreply.github.com"
+          git add projects/ || true
+          if git diff --cached --quiet; then
+            echo "Nothing new to commit."
+          else
+            git commit -m "DataDeck Agent: process inbox [skip ci]"
+            git push
+          fi

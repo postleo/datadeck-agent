@@ -1,0 +1,9 @@
+node_modules
+dist/*
+!dist/server.cjs
+out
+tmp
+.env
+.env.local
+.git
+*.log
